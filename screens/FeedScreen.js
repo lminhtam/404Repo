@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Button, WebView } from 'react-native';
+import {Text, View, StyleSheet, Button, WebView} from 'react-native';
 
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
-    title: 'Feed'
+    title: 'Feed',
   };
   constructor(props) {
-      super(props)
-    }
-
+    super(props);
+  }
 
   render() {
     return (
@@ -20,11 +19,10 @@ export default class FeedScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
- container: {
-   flex: 1,
-   alignItems: 'center',
-   justifyContent: 'center',
-   paddingTop: Constants.statusBarHeight,
-   backgroundColor: '#ffffff',
- },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+  },
 });

@@ -36,6 +36,10 @@ target 'Hara404' do
 
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'Hara404Tests' do
     inherit! :search_paths
     # Pods for testing

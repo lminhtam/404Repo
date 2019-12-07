@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Product from '../components/Product';
 import Color from '../constants/Color';
+import {Icon} from 'native-base';
 
 export default class ListScreen extends React.Component {
   static navigationOptions = {
@@ -68,7 +69,7 @@ export default class ListScreen extends React.Component {
 
   onPress = product => {
     setTimeout(() => {
-      this.props.navigation.navigate('Detail', { detail: product });
+      this.props.navigation.navigate('Detail', {detail: product});
     }, 0);
   };
 
@@ -78,48 +79,48 @@ export default class ListScreen extends React.Component {
     if (text) {
       this.setState({
         filterProduct: this.state.product.filter(product =>
-          product.title.includes(text)
+          product.title.includes(text),
         ),
       });
     } else {
-      this.setState({ filterProduct: this.state.product });
+      this.setState({filterProduct: this.state.product});
     }
   };
 
   sortByName = () => {
-    this.changeSortStatus(0)
+    this.changeSortStatus(0);
     this.setState({
       filterProduct: this.state.filterProduct.sort((p1, p2) =>
         this.state.sortButtonPress[0] === true
           ? p1.title < p2.title
-          : p2.title < p1.title
+          : p2.title < p1.title,
       ),
     });
   };
 
   sortByPrice = () => {
-    this.changeSortStatus(1)
+    this.changeSortStatus(1);
     this.setState({
       filterProduct: this.state.filterProduct.sort((p1, p2) =>
         this.state.sortButtonPress[1] === true
           ? p1.variants[0].price - p2.variants[0].price
-          : p2.variants[0].price - p1.variants[0].price
+          : p2.variants[0].price - p1.variants[0].price,
       ),
     });
   };
 
   sortByInventories = () => {
-    this.changeSortStatus(2)
+    this.changeSortStatus(2);
     this.setState({
       filterProduct: this.state.filterProduct.sort((p1, p2) =>
         this.state.sortButtonPress[2] === true
           ? this.countInventories(p1.variants) -
             this.countInventories(p2.variants)
           : this.countInventories(p2.variants) -
-            this.countInventories(p1.variants)
+            this.countInventories(p1.variants),
       ),
     });
-    console.log(this.state.sortButtonStatus)
+    console.log(this.state.sortButtonStatus);
   };
 
   onRefresh = async () => {
@@ -137,23 +138,21 @@ export default class ListScreen extends React.Component {
     let newButtonPress = this.state.sortButtonPress;
     let newButtonStatus = this.state.sortButtonStatus;
     if (newButtonStatus[buttonId])
-      newButtonPress[buttonId] = !newButtonPress[buttonId]
+      newButtonPress[buttonId] = !newButtonPress[buttonId];
     else {
-      newButtonPress[buttonId] = true
-      newButtonStatus[buttonId] = true
+      newButtonPress[buttonId] = true;
+      newButtonStatus[buttonId] = true;
     }
-    for (let i = 0; i < newButtonStatus.length; i++)
-    {
-      if (i != buttonId)
-        {
-          newButtonStatus[i] = false
-        }
+    for (let i = 0; i < newButtonStatus.length; i++) {
+      if (i != buttonId) {
+        newButtonStatus[i] = false;
+      }
     }
     await this.setState({
       sortButtonPress: newButtonPress,
       sortButtonStatus: newButtonStatus,
     });
-  }
+  };
 
   chooseSortIcon = buttonId => {
     if (this.state.sortButtonPress[buttonId] === true) {
@@ -173,11 +172,14 @@ export default class ListScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.searchSection}>
-          <Ionicons
-            name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
-            size={26}
-            style={styles.searchIcon}
-            color={Color.tintColor}
+          <Icon
+            type="FontAwesome"
+            android="md-search"
+            ios="ios-search"
+            style={{
+              fontSize: 20,
+              color: Color.tintColor,
+            }}
           />
           <TextInput
             style={styles.input}
@@ -190,38 +192,68 @@ export default class ListScreen extends React.Component {
           <TouchableOpacity
             style={styles.sortStyle}
             onPress={() => this.sortByName()}>
-            <Text style={{color: this.state.sortButtonStatus[0] === true ? Color.tintColor : null}}>Tên</Text>
-            {this.state.sortButtonStatus[0] === true ?
-            <Ionicons
-              name={this.chooseSortIcon(0)}
-              size={24}
-              style={styles.searchIcon}
-              color={Color.tintColor}
-            /> : <View/>}
+            <Text
+              style={{
+                color:
+                  this.state.sortButtonStatus[0] === true
+                    ? Color.tintColor
+                    : null,
+              }}>
+              Tên
+            </Text>
+            {this.state.sortButtonStatus[0] === true ? (
+              <Icon
+                name={this.chooseSortIcon(0)}
+                style={styles.searchIcon}
+                color={Color.tintColor}
+              />
+            ) : (
+              <View />
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sortStyle}
             onPress={() => this.sortByPrice()}>
-            <Text style={{color: this.state.sortButtonStatus[1] === true ? Color.tintColor : null}}>Giá</Text>
-            {this.state.sortButtonStatus[1] === true ? 
-            <Ionicons
-              name={this.chooseSortIcon(1)}
-              size={24}
-              style={styles.searchIcon}
-              color={Color.tintColor}
-            /> : <View/>}
+            <Text
+              style={{
+                color:
+                  this.state.sortButtonStatus[1] === true
+                    ? Color.tintColor
+                    : null,
+              }}>
+              Giá
+            </Text>
+            {this.state.sortButtonStatus[1] === true ? (
+              <Icon
+                name={this.chooseSortIcon(1)}
+                style={styles.searchIcon}
+                color={Color.tintColor}
+              />
+            ) : (
+              <View />
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sortStyle}
             onPress={() => this.sortByInventories()}>
-            <Text style={{color: this.state.sortButtonStatus[2] === true ? Color.tintColor : null}}>Tồn</Text>
-            {this.state.sortButtonStatus[2] === true ?
-            <Ionicons
-              name={this.chooseSortIcon(2)}
-              size={24}
-              style={styles.searchIcon}
-              color={Color.tintColor}
-            /> : <View/>}
+            <Text
+              style={{
+                color:
+                  this.state.sortButtonStatus[2] === true
+                    ? Color.tintColor
+                    : null,
+              }}>
+              Tồn
+            </Text>
+            {this.state.sortButtonStatus[2] === true ? (
+              <Icon
+                name={this.chooseSortIcon(2)}
+                style={styles.searchIcon}
+                color={Color.tintColor}
+              />
+            ) : (
+              <View />
+            )}
           </TouchableOpacity>
         </View>
         <View style={styles.listContainer}>
@@ -229,7 +261,7 @@ export default class ListScreen extends React.Component {
             data={this.state.filterProduct}
             //refreshing={this.state.isRefreshing}
             //onRefresh={this.onRefresh()}
-            renderItem={({ item }) => (
+            renderItem={({item}) => (
               <TouchableOpacity onPress={() => this.onPress(item)}>
                 <Product
                   name={item.title}

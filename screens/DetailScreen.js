@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import {Text, View, StyleSheet, Image} from 'react-native';
 import Color from '../constants/Color';
 
 export default class DetailScreen extends React.Component {
@@ -9,7 +9,7 @@ export default class DetailScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      product: props.navigation.state.params.detail
+      product: props.navigation.state.params.detail,
     };
   }
 
@@ -26,9 +26,13 @@ export default class DetailScreen extends React.Component {
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.tagStyle}>Giá</Text>
-            <Text style={styles.priceStyle}>{this.state.product.variants[0].price}</Text>
+            <Text style={styles.priceStyle}>
+              {this.state.product.variants[0].price}
+            </Text>
             <Text style={styles.tagStyle}>Số lượng</Text>
-            <Text style={styles.inventoryStyle}>{this.state.product.variants[0].inventory_quantity}</Text>
+            <Text style={styles.inventoryStyle}>
+              {this.state.product.variants[0].inventory_quantity}
+            </Text>
             <Text style={styles.tagStyle}>Tình trạng</Text>
             <Text style={styles.inventoryStyle}>Tồn kho {} ngày</Text>
           </View>
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageContainer: {
-    flex: 1
+    flex: 1,
   },
   chartContainer: {
     flex: 4,
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     marginLeft: 10,
-    marginTop: 5
+    marginTop: 5,
   },
   priceStyle: {
     fontSize: 14,
