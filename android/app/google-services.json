@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "715810601989",
+    "firebase_url": "https://repo-404cf.firebaseio.com",
+    "project_id": "repo-404cf",
+    "storage_bucket": "repo-404cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715810601989:android:e506e58f226520bb87306c",
+        "android_client_info": {
+          "package_name": "com.hara404"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715810601989-5bkk9elhu1fnf37m0586ac4hj62u4aue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWvxQ8lDS55ETY5aUKFLYInfsVEd-As3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715810601989-5bkk9elhu1fnf37m0586ac4hj62u4aue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
