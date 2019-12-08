@@ -79,7 +79,7 @@ export default class DetailScreen extends React.Component {
   renderRecommendation = ({item}) => (
     <TouchableOpacity>
       <ListItem style={{width: SCREEN_WIDTH - 32}}>
-        <CheckBox checked={false} color="blue" />
+        <CheckBox checked={false} color={Color.tintColor} />
         <Body>
           <Text style={styles.recomStyle}>{item.title}</Text>
         </Body>
@@ -166,6 +166,9 @@ export default class DetailScreen extends React.Component {
                     keyExtractor={item => item.title}
                   />
                 )}
+                <Button block style={styles.applyBtn}>
+                  <Text style={styles.recomStyle}>Áp dụng</Text>
+                </Button>
               </View>
             </View>
           </ScrollView>
@@ -250,4 +253,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Cabin-Regular',
     fontSize: 14,
   },
+  applyBtn: {
+    margin: 16,
+    borderRadius: 10,
+    backgroundColor: Color.tintColor,
+  }
 });
