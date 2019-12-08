@@ -1,5 +1,11 @@
 import * as React from 'react';
-import {View, StyleSheet, FlatList, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import Color from '../constants/Color';
 import {SCREEN_WIDTH} from '../shared/ultility';
 import {Button, Text} from 'native-base';
@@ -26,6 +32,7 @@ export default class MoreScreen extends React.Component {
         'Bearer b2a6272dec86dd214925c4f7f7bc099f6cb7fdf8e05edd06ecb9acccd44b213b',
       shop: {},
       info: [],
+      refreshing: false,
     };
   }
 
@@ -62,9 +69,21 @@ export default class MoreScreen extends React.Component {
     this.getShop();
   }
 
+  onRefresh = async () => {
+    await this.setState({refreshing: true});
+    this.getShop();
+    await this.setState({refreshing: false});
+  };
+
   render() {
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }>
         <View style={styles.container}>
           <Text style={styles.nameStyle}>{this.state.shop.name}</Text>
           <FlatList
@@ -116,10 +135,6 @@ const styles = StyleSheet.create({
     minHeight: 30,
     padding: 15,
     margin: 5,
-    shadowColor: Color.gray,
-    shadowOffset: {width: 2, height: 1},
-    shadowRadius: 5,
-    shadowOpacity: 0.5,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
   },

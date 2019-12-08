@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Text, View, StyleSheet, Dimensions} from 'react-native';
 import Color from '../constants/Color';
 import {Thumbnail} from 'native-base';
-import { SCREEN_WIDTH } from '../shared/ultility';
+import {SCREEN_WIDTH} from '../shared/ultility';
 
 export default class Product extends React.Component {
   render() {
@@ -30,10 +30,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     minHeight: 30,
     margin: 10,
-    shadowColor: Color.gray,
-    shadowOffset: {width: 2, height: 1},
-    shadowRadius: 5,
+    elevation: 4,
+    shadowOffset: {width: 5, height: 5},
+    shadowColor: 'grey',
     shadowOpacity: 0.5,
+    shadowRadius: 10,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
     padding: 15,

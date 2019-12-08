@@ -179,9 +179,26 @@ export default class ListScreen extends React.Component {
   onRefresh = async () => {
     await this.setState({refreshing: true});
     this.getProducts();
-    console.log('dang chay');
     await this.setState({refreshing: false});
   };
+
+  renderItem = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        this.onPress(item);
+      }}>
+      <Product
+        name={item.title}
+        image={
+          item.images.length === 0
+            ? require('../shared/img/unknownProduct.png')
+            : {uri: item.images[0].src}
+        }
+        price={`${formatCurrency(this.getPrice(item.variants))}đ`}
+        inventory_quantity={this.countInventories(item.variants)}
+      />
+    </TouchableOpacity>
+  );
 
   componentDidMount() {
     // firebase
@@ -363,26 +380,7 @@ export default class ListScreen extends React.Component {
                 this.state.filterProduct.length !== 0 ? (
                   <FlatList
                     data={this.state.filterProduct}
-                    // refreshing={this.state.isRefreshing}
-                    // onRefresh={this.onRefresh()}
-                    renderItem={({item}) => (
-                      <TouchableOpacity onPress={() => this.onPress(item)}>
-                        <Product
-                          name={item.title}
-                          image={
-                            item.images.length === 0
-                              ? require('../shared/img/unknownProduct.png')
-                              : {uri: item.images[0].src}
-                          }
-                          price={`${formatCurrency(
-                            this.getPrice(item.variants),
-                          )}đ`}
-                          inventory_quantity={this.countInventories(
-                            item.variants,
-                          )}
-                        />
-                      </TouchableOpacity>
-                    )}
+                    renderItem={this.renderItem}
                     extraData={this.state}
                     keyExtractor={item => item.title}
                   />
