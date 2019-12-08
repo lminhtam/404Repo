@@ -38,9 +38,7 @@ export default class MoreScreen extends React.Component {
         Authorization: this.state.access_token,
       },
     });
-    console.log(response);
     let jsonResponse = await response.json();
-    console.log(jsonResponse);
     await this.setState({shop: jsonResponse.shop});
     let info = [];
     info.push({name: 'Email', info: this.state.shop.email});
@@ -123,6 +121,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     shadowOpacity: 0.5,
     borderRadius: 5,
+    width: SCREEN_WIDTH - 32,
   },
   logoutStyle: {
     fontFamily: 'Cabin-Regular',

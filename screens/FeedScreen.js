@@ -1,5 +1,7 @@
 import * as React from 'react';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import SafeAreaView from 'react-native-safe-area-view';
+import {STATUSBAR_HEIGHT} from '../shared/ultility';
 
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
@@ -29,6 +31,7 @@ export default class FeedScreen extends React.Component {
 
 const styles = StyleSheet.create({
   containerScroll: {
+    marginTop: STATUSBAR_HEIGHT,
     backgroundColor: '#ffffff',
   },
   container: {
@@ -36,6 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 16,
+    backgroundColor: '#ffffff',
   },
   noNotiText: {
     fontFamily: 'Cabin-Regular',

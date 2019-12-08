@@ -13,6 +13,7 @@ import Color from '../constants/Color';
 import {Header, Item, Input, Icon, Button, Text, Segment} from 'native-base';
 import firebase from 'react-native-firebase';
 import {SCREEN_WIDTH, formatCurrency, SCREEN_HEIGHT} from '../shared/ultility';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class ListScreen extends React.Component {
   constructor(props) {
@@ -89,7 +90,6 @@ export default class ListScreen extends React.Component {
 
   sortByName = () => {
     this.changeSortStatus(0);
-    console.log(this.state.filterProduct);
     this.setState({
       filterProduct: this.state.filterProduct.sort((p1, p2) =>
         this.state.sortButtonPress[0] === true
@@ -121,7 +121,6 @@ export default class ListScreen extends React.Component {
             this.countInventories(p1.variants),
       ),
     });
-    console.log(this.state.sortButtonStatus);
   };
 
   onRefresh = async () => {
@@ -236,100 +235,106 @@ export default class ListScreen extends React.Component {
     return (
       <SafeAreaView>
         <View style={{height: SCREEN_HEIGHT - 60, width: '100%'}}>
-          <Header searchBar rounded hasSegment>
-            <Item>
-              <Icon name="ios-search" />
-              <Input
-                style={styles.inputSearch}
-                placeholder="Nhập tên sản phẩm"
-                onChangeText={text => this.setSearchValue(text)}
-              />
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#003E70', '#217FF3']}
+            style={{width: '100%', height: 130}}>
+            <Header transparent searchBar rounded hasSegment>
+              <Item>
+                <Icon name="ios-search" />
+                <Input
+                  style={styles.inputSearch}
+                  placeholder="Nhập tên sản phẩm"
+                  onChangeText={text => this.setSearchValue(text)}
+                />
+                <Button
+                  transparent
+                  active
+                  onPress={() => {
+                    this.searchProduct();
+                  }}>
+                  <Text style={styles.searchBtn}>Tìm kiếm</Text>
+                </Button>
+              </Item>
+            </Header>
+            <Segment transparent style={{backgroundColor: null}}>
               <Button
-                transparent
-                active
-                onPress={() => {
-                  this.searchProduct();
-                }}>
-                <Text style={styles.searchBtn}>Tìm kiếm</Text>
+                first
+                style={styles.sortStyle}
+                active={this.state.sortButtonStatus[0]}
+                onPress={() => this.sortByName()}>
+                <Text
+                  style={{
+                    ...styles.sortBtn,
+                    color:
+                      this.state.sortButtonStatus[0] === true
+                        ? Color.tintColor
+                        : '#ffffff',
+                  }}>
+                  Tên
+                </Text>
+                {this.state.sortButtonStatus[0] === true ? (
+                  <Icon
+                    type="MaterialIcons"
+                    name={this.chooseSortIcon(0)}
+                    style={styles.searchIcon}
+                  />
+                ) : (
+                  <View />
+                )}
               </Button>
-            </Item>
-          </Header>
-          <Segment>
-            <Button
-              first
-              style={styles.sortStyle}
-              active={this.state.sortButtonStatus[0]}
-              onPress={() => this.sortByName()}>
-              <Text
-                style={{
-                  ...styles.sortBtn,
-                  color:
-                    this.state.sortButtonStatus[0] === true
-                      ? Color.tintColor
-                      : '#ffffff',
-                }}>
-                Tên
-              </Text>
-              {this.state.sortButtonStatus[0] === true ? (
-                <Icon
-                  type="MaterialIcons"
-                  name={this.chooseSortIcon(0)}
-                  style={styles.searchIcon}
-                />
-              ) : (
-                <View />
-              )}
-            </Button>
-            <Button
-              style={styles.sortStyle}
-              active={this.state.sortButtonStatus[1]}
-              onPress={() => this.sortByPrice()}>
-              <Text
-                style={{
-                  ...styles.sortBtn,
-                  color:
-                    this.state.sortButtonStatus[1] === true
-                      ? Color.tintColor
-                      : '#ffffff',
-                }}>
-                Giá
-              </Text>
-              {this.state.sortButtonStatus[1] === true ? (
-                <Icon
-                  type="MaterialIcons"
-                  name={this.chooseSortIcon(1)}
-                  style={styles.searchIcon}
-                />
-              ) : (
-                <View />
-              )}
-            </Button>
-            <Button
-              last
-              style={styles.sortStyle}
-              active={this.state.sortButtonStatus[2]}
-              onPress={() => this.sortByInventories()}>
-              <Text
-                style={{
-                  ...styles.sortBtn,
-                  color:
-                    this.state.sortButtonStatus[2] === true
-                      ? Color.tintColor
-                      : '#ffffff',
-                }}>
-                Tồn
-              </Text>
-              {this.state.sortButtonStatus[2] === true ? (
-                <Icon
-                  type="MaterialIcons"
-                  name={this.chooseSortIcon(2)}
-                  style={styles.searchIcon}
-                />
-              ) : (
-                <View />
-              )}
-            </Button>
-          </Segment>
+              <Button
+                style={styles.sortStyle}
+                active={this.state.sortButtonStatus[1]}
+                onPress={() => this.sortByPrice()}>
+                <Text
+                  style={{
+                    ...styles.sortBtn,
+                    color:
+                      this.state.sortButtonStatus[1] === true
+                        ? Color.tintColor
+                        : '#ffffff',
+                  }}>
+                  Giá
+                </Text>
+                {this.state.sortButtonStatus[1] === true ? (
+                  <Icon
+                    type="MaterialIcons"
+                    name={this.chooseSortIcon(1)}
+                    style={styles.searchIcon}
+                  />
+                ) : (
+                  <View />
+                )}
+              </Button>
+              <Button
+                last
+                style={styles.sortStyle}
+                active={this.state.sortButtonStatus[2]}
+                onPress={() => this.sortByInventories()}>
+                <Text
+                  style={{
+                    ...styles.sortBtn,
+                    color:
+                      this.state.sortButtonStatus[2] === true
+                        ? Color.tintColor
+                        : '#ffffff',
+                  }}>
+                  Tồn
+                </Text>
+                {this.state.sortButtonStatus[2] === true ? (
+                  <Icon
+                    type="MaterialIcons"
+                    name={this.chooseSortIcon(2)}
+                    style={styles.searchIcon}
+                  />
+                ) : (
+                  <View />
+                )}
+              </Button>
+            </Segment>
+          </LinearGradient>
           <ScrollView style={styles.container}>
             <View style={styles.listContainer}>
               {this.state.filterProduct.length !== 0 ? (
