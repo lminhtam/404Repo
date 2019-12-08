@@ -7,10 +7,20 @@ import {
   Platform,
   TouchableOpacity,
   SafeAreaView,
+  RefreshControl,
 } from 'react-native';
 import Product from '../components/Product';
 import Color from '../constants/Color';
-import {Header, Item, Input, Icon, Button, Text, Segment} from 'native-base';
+import {
+  Header,
+  Item,
+  Input,
+  Icon,
+  Button,
+  Text,
+  Segment,
+  Spinner,
+} from 'native-base';
 import firebase from 'react-native-firebase';
 import {SCREEN_WIDTH, formatCurrency, SCREEN_HEIGHT} from '../shared/ultility';
 import LinearGradient from 'react-native-linear-gradient';
@@ -19,15 +29,15 @@ export default class ListScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sortPick: 'Sắp theo',
       access_token:
         'Bearer b2a6272dec86dd214925c4f7f7bc099f6cb7fdf8e05edd06ecb9acccd44b213b',
-      product: [],
-      filterProduct: [],
-      isRefreshing: false,
+      product: null,
+      filterProduct: null,
       sortButtonStatus: [true, false, false],
       sortButtonPress: [true, false, false],
       searchValue: '',
+      isLoading: true,
+      refreshing: false,
     };
   }
   static navigationOptions = {
@@ -35,19 +45,27 @@ export default class ListScreen extends React.Component {
   };
 
   getProducts = async () => {
-    const response = await fetch('https://apis.haravan.com/com/products.json', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.state.access_token,
-      },
-    });
-    let jsonResponse = await response.json();
-    await this.setState({
-      product: jsonResponse.products,
-      filterProduct: jsonResponse.products,
-    });
+    try {
+      const response = await fetch(
+        'https://apis.haravan.com/com/products.json',
+        {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: this.state.access_token,
+          },
+        },
+      );
+      let jsonResponse = await response.json();
+      await this.setState({
+        product: jsonResponse.products,
+        filterProduct: jsonResponse.products,
+        isLoading: false,
+      });
+    } catch {
+      await this.setState({isLoading: false});
+    }
   };
 
   countInventories = variants => {
@@ -123,17 +141,6 @@ export default class ListScreen extends React.Component {
     });
   };
 
-  onRefresh = async () => {
-    await this.setState({
-      isRefreshing: true,
-    });
-    this.getProducts();
-
-    await this.setState({
-      isRefreshing: false,
-    });
-  };
-
   changeSortStatus = async buttonId => {
     let newButtonPress = this.state.sortButtonPress;
     let newButtonStatus = this.state.sortButtonStatus;
@@ -167,6 +174,13 @@ export default class ListScreen extends React.Component {
     if (text === '') {
       this.setState({filterProduct: this.state.product});
     }
+  };
+
+  onRefresh = async () => {
+    await this.setState({refreshing: true});
+    this.getProducts();
+    console.log('dang chay');
+    await this.setState({refreshing: false});
   };
 
   componentDidMount() {
@@ -335,38 +349,50 @@ export default class ListScreen extends React.Component {
               </Button>
             </Segment>
           </LinearGradient>
-          <ScrollView style={styles.container}>
+          <ScrollView
+            contentContainerStyle={styles.container}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.onRefresh.bind(this)}
+              />
+            }>
             <View style={styles.listContainer}>
-              {this.state.filterProduct.length !== 0 ? (
-                <FlatList
-                  data={this.state.filterProduct}
-                  // refreshing={this.state.isRefreshing}
-                  // onRefresh={this.onRefresh()}
-                  renderItem={({item}) => (
-                    <TouchableOpacity onPress={() => this.onPress(item)}>
-                      <Product
-                        name={item.title}
-                        image={
-                          item.images.length === 0
-                            ? require('../shared/img/unknownProduct.png')
-                            : {uri: item.images[0].src}
-                        }
-                        price={`${formatCurrency(
-                          this.getPrice(item.variants),
-                        )}đ`}
-                        inventory_quantity={this.countInventories(
-                          item.variants,
-                        )}
-                      />
-                    </TouchableOpacity>
-                  )}
-                  extraData={this.state}
-                  keyExtractor={item => item.title}
-                />
+              {this.state.filterProduct !== null &&
+              this.state.isLoading === false ? (
+                this.state.filterProduct.length !== 0 ? (
+                  <FlatList
+                    data={this.state.filterProduct}
+                    // refreshing={this.state.isRefreshing}
+                    // onRefresh={this.onRefresh()}
+                    renderItem={({item}) => (
+                      <TouchableOpacity onPress={() => this.onPress(item)}>
+                        <Product
+                          name={item.title}
+                          image={
+                            item.images.length === 0
+                              ? require('../shared/img/unknownProduct.png')
+                              : {uri: item.images[0].src}
+                          }
+                          price={`${formatCurrency(
+                            this.getPrice(item.variants),
+                          )}đ`}
+                          inventory_quantity={this.countInventories(
+                            item.variants,
+                          )}
+                        />
+                      </TouchableOpacity>
+                    )}
+                    extraData={this.state}
+                    keyExtractor={item => item.title}
+                  />
+                ) : (
+                  <Text style={styles.noResult}>
+                    Không có kết quả nào phù hợp
+                  </Text>
+                )
               ) : (
-                <Text style={styles.noResult}>
-                  Không có kết quả nào phù hợp
-                </Text>
+                <Spinner color="blue" />
               )}
             </View>
           </ScrollView>
