@@ -1,23 +1,20 @@
 import * as React from 'react';
 import {
-  Text,
   View,
+  ScrollView,
   StyleSheet,
   FlatList,
-  Button,
-  TextInput,
   Platform,
   TouchableOpacity,
-  Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import Product from '../components/Product';
 import Color from '../constants/Color';
-import {Icon} from 'native-base';
+import {Header, Item, Input, Icon, Button, Text, Segment} from 'native-base';
+import firebase from 'react-native-firebase';
+import {SCREEN_WIDTH, formatCurrency, SCREEN_HEIGHT} from '../shared/ultility';
 
 export default class ListScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Danh sách',
-  };
   constructor(props) {
     super(props);
     this.state = {
@@ -29,8 +26,12 @@ export default class ListScreen extends React.Component {
       isRefreshing: false,
       sortButtonStatus: [true, false, false],
       sortButtonPress: [true, false, false],
+      searchValue: '',
     };
   }
+  static navigationOptions = {
+    header: <View />,
+  };
 
   getProducts = async () => {
     const response = await fetch('https://apis.haravan.com/com/products.json', {
@@ -73,13 +74,12 @@ export default class ListScreen extends React.Component {
     }, 0);
   };
 
-  searchProduct = text => {
-    console.log(text);
-    console.log(this.state.product[1].title.includes(text));
+  searchProduct = () => {
+    var text = this.state.searchValue.toLowerCase();
     if (text) {
       this.setState({
         filterProduct: this.state.product.filter(product =>
-          product.title.includes(text),
+          product.title.toLowerCase().includes(text),
         ),
       });
     } else {
@@ -89,6 +89,7 @@ export default class ListScreen extends React.Component {
 
   sortByName = () => {
     this.changeSortStatus(0);
+    console.log(this.state.filterProduct);
     this.setState({
       filterProduct: this.state.filterProduct.sort((p1, p2) =>
         this.state.sortButtonPress[0] === true
@@ -156,135 +157,222 @@ export default class ListScreen extends React.Component {
 
   chooseSortIcon = buttonId => {
     if (this.state.sortButtonPress[buttonId] === true) {
-      return Platform.OS === 'ios' ? 'ios-arrow-round-up' : 'md-arrow-round-up';
+      return 'arrow-upward';
     } else {
-      return Platform.OS === 'ios'
-        ? 'ios-arrow-round-down'
-        : 'md-arrow-round-down';
+      return 'arrow-downward';
+    }
+  };
+
+  setSearchValue = text => {
+    this.setState({searchValue: text});
+    if (text === '') {
+      this.setState({filterProduct: this.state.product});
     }
   };
 
   componentDidMount() {
+    // firebase
+    //   .auth()
+    //   .signInAnonymously()
+    //   .then(credential => {
+    //     if (credential) {
+    //       console.log('default app user ->', credential.user.toJSON());
+    //     }
+    //   });
+    // const iosConfig = {
+    //   clientId: 'x',
+    //   appId: 'x',
+    //   apiKey: 'x',
+    //   databaseURL: 'x',
+    //   storageBucket: 'x',
+    //   messagingSenderId: 'x',
+    //   projectId: 'x',
+
+    //   // enable persistence by adding the below flag
+    //   persistence: true,
+    // };
+
+    // // pluck values from your `google-services.json` file you created on the firebase console
+    // const androidConfig = {
+    //   clientId: '715810601989-5bkk9elhu1fnf37m0586ac4hj62u4aue.apps.googleusercontent.com',
+    //   appId: 'x',
+    //   apiKey: 'AIzaSyCWvxQ8lDS55ETY5aUKFLYInfsVEd-As3U',
+    //   databaseURL: 'x',
+    //   storageBucket: 'repo-404cf.appspot.com',
+    //   messagingSenderId: 'x',
+    //   projectId: 'repo-404cf',
+
+    //   // enable persistence by adding the below flag
+    //   persistence: true,
+    // };
+
+    // const kittensApp = firebase.initializeApp(
+    //   // use platform specific firebase config
+    //   Platform.OS === 'ios' ? iosConfig : androidConfig,
+    //   // name of this app
+    //   'kittens',
+    // );
+
+    // // dynamically created apps aren't available immediately due to the
+    // // asynchronous nature of react native bridging, therefore you must
+    // // wait for an `onReady` state before calling any modules/methods
+    // // otherwise you will most likely run into `app not initialized` exceptions
+    // kittensApp.onReady().then(app => {
+    //   // --- ready ---
+    //   // use `app` arg, kittensApp var or `app('kittens')` to access modules
+    //   // and their methods. e.g:
+    //   firebase
+    //     .app('kittens')
+    //     .auth()
+    //     .signInAnonymously()
+    //     .then(user => {
+    //       console.log('kittensApp user ->', user.toJSON());
+    //     });
+    // });
     this.getProducts();
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.searchSection}>
-          <Icon
-            type="FontAwesome"
-            android="md-search"
-            ios="ios-search"
-            style={{
-              fontSize: 20,
-              color: Color.tintColor,
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Tìm sản phẩm"
-            onChangeText={text => this.searchProduct(text)}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-        <View style={styles.sortContainer}>
-          <TouchableOpacity
-            style={styles.sortStyle}
-            onPress={() => this.sortByName()}>
-            <Text
-              style={{
-                color:
-                  this.state.sortButtonStatus[0] === true
-                    ? Color.tintColor
-                    : null,
-              }}>
-              Tên
-            </Text>
-            {this.state.sortButtonStatus[0] === true ? (
-              <Icon
-                name={this.chooseSortIcon(0)}
-                style={styles.searchIcon}
-                color={Color.tintColor}
+      <SafeAreaView>
+        <View style={{height: SCREEN_HEIGHT - 60, width: '100%'}}>
+          <Header searchBar rounded hasSegment>
+            <Item>
+              <Icon name="ios-search" />
+              <Input
+                style={styles.inputSearch}
+                placeholder="Nhập tên sản phẩm"
+                onChangeText={text => this.setSearchValue(text)}
               />
-            ) : (
-              <View />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sortStyle}
-            onPress={() => this.sortByPrice()}>
-            <Text
-              style={{
-                color:
-                  this.state.sortButtonStatus[1] === true
-                    ? Color.tintColor
-                    : null,
-              }}>
-              Giá
-            </Text>
-            {this.state.sortButtonStatus[1] === true ? (
-              <Icon
-                name={this.chooseSortIcon(1)}
-                style={styles.searchIcon}
-                color={Color.tintColor}
-              />
-            ) : (
-              <View />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sortStyle}
-            onPress={() => this.sortByInventories()}>
-            <Text
-              style={{
-                color:
-                  this.state.sortButtonStatus[2] === true
-                    ? Color.tintColor
-                    : null,
-              }}>
-              Tồn
-            </Text>
-            {this.state.sortButtonStatus[2] === true ? (
-              <Icon
-                name={this.chooseSortIcon(2)}
-                style={styles.searchIcon}
-                color={Color.tintColor}
-              />
-            ) : (
-              <View />
-            )}
-          </TouchableOpacity>
-        </View>
-        <View style={styles.listContainer}>
-          <FlatList
-            data={this.state.filterProduct}
-            //refreshing={this.state.isRefreshing}
-            //onRefresh={this.onRefresh()}
-            renderItem={({item}) => (
-              <TouchableOpacity onPress={() => this.onPress(item)}>
-                <Product
-                  name={item.title}
-                  image={item.images[0].src}
-                  price={this.getPrice(item.variants)}
-                  inventory_quantity={this.countInventories(item.variants)}
+              <Button
+                transparent
+                active
+                onPress={() => {
+                  this.searchProduct();
+                }}>
+                <Text style={styles.searchBtn}>Tìm kiếm</Text>
+              </Button>
+            </Item>
+          </Header>
+          <Segment>
+            <Button
+              first
+              style={styles.sortStyle}
+              active={this.state.sortButtonStatus[0]}
+              onPress={() => this.sortByName()}>
+              <Text
+                style={{
+                  ...styles.sortBtn,
+                  color:
+                    this.state.sortButtonStatus[0] === true
+                      ? Color.tintColor
+                      : '#ffffff',
+                }}>
+                Tên
+              </Text>
+              {this.state.sortButtonStatus[0] === true ? (
+                <Icon
+                  type="MaterialIcons"
+                  name={this.chooseSortIcon(0)}
+                  style={styles.searchIcon}
                 />
-              </TouchableOpacity>
-            )}
-            extraData={this.state}
-            keyExtractor={item => item.title}
-          />
+              ) : (
+                <View />
+              )}
+            </Button>
+            <Button
+              style={styles.sortStyle}
+              active={this.state.sortButtonStatus[1]}
+              onPress={() => this.sortByPrice()}>
+              <Text
+                style={{
+                  ...styles.sortBtn,
+                  color:
+                    this.state.sortButtonStatus[1] === true
+                      ? Color.tintColor
+                      : '#ffffff',
+                }}>
+                Giá
+              </Text>
+              {this.state.sortButtonStatus[1] === true ? (
+                <Icon
+                  type="MaterialIcons"
+                  name={this.chooseSortIcon(1)}
+                  style={styles.searchIcon}
+                />
+              ) : (
+                <View />
+              )}
+            </Button>
+            <Button
+              last
+              style={styles.sortStyle}
+              active={this.state.sortButtonStatus[2]}
+              onPress={() => this.sortByInventories()}>
+              <Text
+                style={{
+                  ...styles.sortBtn,
+                  color:
+                    this.state.sortButtonStatus[2] === true
+                      ? Color.tintColor
+                      : '#ffffff',
+                }}>
+                Tồn
+              </Text>
+              {this.state.sortButtonStatus[2] === true ? (
+                <Icon
+                  type="MaterialIcons"
+                  name={this.chooseSortIcon(2)}
+                  style={styles.searchIcon}
+                />
+              ) : (
+                <View />
+              )}
+            </Button>
+          </Segment>
+          <ScrollView style={styles.container}>
+            <View style={styles.listContainer}>
+              {this.state.filterProduct.length !== 0 ? (
+                <FlatList
+                  data={this.state.filterProduct}
+                  // refreshing={this.state.isRefreshing}
+                  // onRefresh={this.onRefresh()}
+                  renderItem={({item}) => (
+                    <TouchableOpacity onPress={() => this.onPress(item)}>
+                      <Product
+                        name={item.title}
+                        image={
+                          item.images.length === 0
+                            ? require('../shared/img/unknownProduct.png')
+                            : {uri: item.images[0].src}
+                        }
+                        price={`${formatCurrency(
+                          this.getPrice(item.variants),
+                        )}đ`}
+                        inventory_quantity={this.countInventories(
+                          item.variants,
+                        )}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  extraData={this.state}
+                  keyExtractor={item => item.title}
+                />
+              ) : (
+                <Text style={styles.noResult}>
+                  Không có kết quả nào phù hợp
+                </Text>
+              )}
+            </View>
+          </ScrollView>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Color.lightGray,
   },
   sortContainer: {
@@ -294,8 +382,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   listContainer: {
-    flex: 10,
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
   },
   searchSection: {
     flex: 1,
@@ -305,7 +395,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   searchIcon: {
-    padding: 10,
+    color: Color.tintColor,
+    fontSize: 12,
   },
   input: {
     flex: 1,
@@ -319,8 +410,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: Dimensions.get('window').width / 3,
-    //borderColor: Color.tintColor,
-    padding: 5,
+    width: (SCREEN_WIDTH - 32) / 3,
+  },
+  sortBtn: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 12,
+  },
+  inputSearch: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 14,
+  },
+  searchBtn: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 12,
+  },
+  noResult: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 14,
+    color: 'gray',
   },
 });

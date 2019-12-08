@@ -35,10 +35,7 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         tabBarLabel: 'Danh sách',
         tabBarIcon: ({focused}) => (
-          <TabBarIcon
-            focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-cart' : 'md-cart'}
-          />
+          <TabBarIcon focused={focused} name="shopping-cart" />
         ),
       },
     },
@@ -47,12 +44,7 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         tabBarLabel: 'Thông báo',
         tabBarIcon: ({focused}) => (
-          <TabBarIcon
-            focused={focused}
-            name={
-              Platform.OS === 'ios' ? 'ios-notifications' : 'md-notifications'
-            }
-          />
+          <TabBarIcon focused={focused} name="notifications" />
         ),
       },
     },
@@ -60,17 +52,17 @@ const TabNavigator = createBottomTabNavigator(
       screen: MoreScreen,
       navigationOptions: {
         tabBarLabel: 'Thêm',
-        tabBarIcon: ({focused}) => (
-          <TabBarIcon
-            focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-contact' : 'md-contact'}
-          />
-        ),
+        tabBarIcon: ({focused}) => <TabBarIcon focused={focused} name="info" />,
       },
     },
   },
   {
     tabBarOptions: {
+      style: {height: 50},
+      labelStyle: {
+        fontFamily: 'Cabin-Regular',
+        fontSize: 14,
+      },
       activeTintColor: Color.tabIconSelected,
       inactiveTintColor: Color.tabIconDefault,
     },

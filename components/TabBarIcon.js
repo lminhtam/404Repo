@@ -6,7 +6,7 @@ export default class TabBarIcon extends React.Component {
   render() {
     return (
       <Icon
-        type="FontAwesome"
+        type="MaterialIcons"
         name={this.props.name}
         style={{
           fontSize: 20,

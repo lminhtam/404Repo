@@ -1,11 +1,25 @@
 import * as React from 'react';
-import {Text, View, StyleSheet, Image} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, Image} from 'react-native';
 import Color from '../constants/Color';
+import {Header, Left, Body, Button, Icon, Title} from 'native-base';
+import {Thumbnail} from 'native-base';
 
 export default class DetailScreen extends React.Component {
   static navigationOptions = {
-    title: 'Chi tiết',
+    header: (
+      <Header>
+        <Left>
+          <Button transparent>
+            <Icon name="arrow-back" />
+          </Button>
+        </Left>
+        <Body>
+          <Title>Chi tiết</Title>
+        </Body>
+      </Header>
+    ),
   };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -15,13 +29,18 @@ export default class DetailScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style={styles.nameStyle}>{this.state.product.title}</Text>
         <View style={styles.detailContainer}>
           <View style={styles.imageContainer}>
-            <Image
-              style={styles.imageStyle}
-              source={{uri: this.state.product.images[0].src}}
+            <Thumbnail
+              square
+              large
+              source={
+                item.images.length === 0
+                  ? require('../shared/img/unknownProduct.png')
+                  : {uri: item.images[0].src}
+              }
             />
           </View>
           <View style={styles.infoContainer}>
@@ -43,7 +62,7 @@ export default class DetailScreen extends React.Component {
         <View style={styles.recommendationContainer}>
           <Text style={styles.nameStyle}>Đề xuất</Text>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -51,16 +70,12 @@ export default class DetailScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    //paddingTop: Constants.statusBarHeight,
     backgroundColor: Color.lightGray,
-    //margin: 10,
   },
   detailContainer: {
     flex: 3,
     flexDirection: 'row',
     justifyContent: 'center',
-    //backgroundColor: '#aaaaa1',
   },
   infoContainer: {
     flex: 1,
@@ -74,11 +89,9 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     flex: 4,
-    //backgroundColor: '#aaaba1',
   },
   recommendationContainer: {
     flex: 3,
-    //backgroundColor: '#afaca1',
   },
   imageStyle: {
     height: '100%',
