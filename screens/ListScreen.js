@@ -47,13 +47,12 @@ export default class ListScreen extends React.Component {
   getProducts = async () => {
     try {
       const response = await fetch(
-        'https://apis.haravan.com/com/products.json',
+        'https://us-central1-repo-404cf.cloudfunctions.net/loadProduct?access_tk=8a210361ebaf7c9210af6b07782e1fee7c42ee8b6fdc43703870e24af7487193&fbclid=IwAR1-x1Md1PAhn6zQcxFIkppstGO6jXmGcTKvS17ISfUY_larqz7naLkCte0',
         {
           method: 'GET',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: this.state.access_token,
           },
         },
       );
@@ -201,64 +200,6 @@ export default class ListScreen extends React.Component {
   );
 
   componentDidMount() {
-    // firebase
-    //   .auth()
-    //   .signInAnonymously()
-    //   .then(credential => {
-    //     if (credential) {
-    //       console.log('default app user ->', credential.user.toJSON());
-    //     }
-    //   });
-    // const iosConfig = {
-    //   clientId: 'x',
-    //   appId: 'x',
-    //   apiKey: 'x',
-    //   databaseURL: 'x',
-    //   storageBucket: 'x',
-    //   messagingSenderId: 'x',
-    //   projectId: 'x',
-
-    //   // enable persistence by adding the below flag
-    //   persistence: true,
-    // };
-
-    // // pluck values from your `google-services.json` file you created on the firebase console
-    // const androidConfig = {
-    //   clientId: '715810601989-5bkk9elhu1fnf37m0586ac4hj62u4aue.apps.googleusercontent.com',
-    //   appId: 'x',
-    //   apiKey: 'AIzaSyCWvxQ8lDS55ETY5aUKFLYInfsVEd-As3U',
-    //   databaseURL: 'x',
-    //   storageBucket: 'repo-404cf.appspot.com',
-    //   messagingSenderId: 'x',
-    //   projectId: 'repo-404cf',
-
-    //   // enable persistence by adding the below flag
-    //   persistence: true,
-    // };
-
-    // const kittensApp = firebase.initializeApp(
-    //   // use platform specific firebase config
-    //   Platform.OS === 'ios' ? iosConfig : androidConfig,
-    //   // name of this app
-    //   'kittens',
-    // );
-
-    // // dynamically created apps aren't available immediately due to the
-    // // asynchronous nature of react native bridging, therefore you must
-    // // wait for an `onReady` state before calling any modules/methods
-    // // otherwise you will most likely run into `app not initialized` exceptions
-    // kittensApp.onReady().then(app => {
-    //   // --- ready ---
-    //   // use `app` arg, kittensApp var or `app('kittens')` to access modules
-    //   // and their methods. e.g:
-    //   firebase
-    //     .app('kittens')
-    //     .auth()
-    //     .signInAnonymously()
-    //     .then(user => {
-    //       console.log('kittensApp user ->', user.toJSON());
-    //     });
-    // });
     this.getProducts();
   }
 
@@ -367,7 +308,6 @@ export default class ListScreen extends React.Component {
             </Segment>
           </LinearGradient>
           <ScrollView
-            contentContainerStyle={styles.container}
             refreshControl={
               <RefreshControl
                 refreshing={this.state.refreshing}

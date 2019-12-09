@@ -11,6 +11,7 @@ import {
   Text,
   CheckBox,
   ListItem,
+  Spinner,
 } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -57,7 +58,40 @@ export default class DetailScreen extends React.Component {
     this.state = {
       product: props.navigation.state.params.detail,
       recommendations: Recommend,
+      isLoading: true,
+      recommendProductArray: [],
     };
+  }
+
+  getPromo = async () => {
+    try {
+      const response = await fetch(
+        'https://https://us-central1-repo-404cf.cloudfunctions.net/setPromo',
+        {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      let jsonResponse = await response.json();
+      await this.setState({
+        recommendProductArray: jsonResponse,
+        isLoading: false,
+      });
+    } catch {
+      await this.setState({isLoading: false});
+    }
+  };
+
+  componentDidMount() {
+    this.getPromo();
+    console.log(this.state.recommendProductArray);
+    var productWithPromo = this.state.recommendProductArray;
+    var index = productWithPromo.findIndex(
+      ({item}) => item.id == this.state.product.id,
+    );
   }
 
   renderItem = ({item}) => (
@@ -136,7 +170,7 @@ export default class DetailScreen extends React.Component {
               <View style={styles.detailContainer}>
                 <View style={styles.infoContainer}>
                   <Text style={styles.tagStyle}>Giá:</Text>
-                  <Text style={styles.tagStyle}>Số lượng:</Text>
+                  <Text style={styles.tagStyle}>Số lượng tồn:</Text>
                   <Text style={styles.tagStyle}>Tình trạng:</Text>
                 </View>
                 <View style={styles.infoContainer}>
@@ -257,5 +291,5 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 10,
     backgroundColor: Color.tintColor,
-  }
+  },
 });

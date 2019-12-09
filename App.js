@@ -15,6 +15,7 @@ import FeedScreen from './screens/FeedScreen';
 import ListScreen from './screens/ListScreen';
 import MoreScreen from './screens/MoreScreen';
 import DetailScreen from './screens/DetailScreen';
+import LoginScreen from './screens/LoginScreen';
 import TabBarIcon from './components/TabBarIcon';
 import Color from './constants/Color';
 
@@ -72,6 +73,17 @@ const TabNavigator = createBottomTabNavigator(
   },
 );
 
-const App = createAppContainer(TabNavigator);
+const AppStack = createStackNavigator(
+  {
+    Login: LoginScreen,
+    Main: TabNavigator,
+  },
+  {
+    initialRouteName: 'Login',
+    headerMode: 'none',
+  },
+);
+
+const App = createAppContainer(AppStack);
 
 export default App;

@@ -111,13 +111,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Color.lightGray,
-    margin: 16,
   },
   nameStyle: {
     fontFamily: 'Cabin-Bold',
     fontSize: 20,
     margin: 20,
     color: Color.tintColor,
+    paddingTop: 16,
   },
   tagStyle: {
     fontFamily: 'Cabin-Regular',
