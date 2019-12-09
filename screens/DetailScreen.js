@@ -33,21 +33,6 @@ const emptyImg = [
   },
 ];
 
-const Recommend = [
-  {
-    title: 'Giảm 30%',
-    type: 'DISCOUNT',
-  },
-  {
-    title: 'Tặng quà sinh nhật',
-    type: 'BIRTHDAY_GIFT',
-  },
-  {
-    title: 'Trả góp 0%',
-    type: 'INSTALLMENT',
-  },
-];
-
 export default class DetailScreen extends React.Component {
   static navigationOptions = {
     header: <View />,
@@ -57,29 +42,59 @@ export default class DetailScreen extends React.Component {
     super(props);
     this.state = {
       product: props.navigation.state.params.detail,
-      recommendations: Recommend,
+      recommendations: [],
       isLoading: true,
       recommendProductArray: [],
     };
   }
 
+  compareId = item => item.id === this.state.product.id;
+
   getPromo = async () => {
     try {
       const response = await fetch(
-        'https://https://us-central1-repo-404cf.cloudfunctions.net/setPromo',
+        'https://us-central1-repo-404cf.cloudfunctions.net/setPromo',
         {
           method: 'GET',
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
         },
       );
       let jsonResponse = await response.json();
       await this.setState({
         recommendProductArray: jsonResponse,
-        isLoading: false,
       });
+      var index = this.state.recommendProductArray.findIndex(this.compareId);
+      var recommend = [];
+      if (index >= 0) {
+        if (this.state.recommendProductArray[index].promoID.birthdayPromo === 1)
+          recommend.push({
+            title: 'Quà tặng sinh nhật',
+            type: 'BIRTHDAY_PROMO',
+          });
+        if (this.state.recommendProductArray[index].promoID.directPromo === 1)
+          recommend.push({
+            title: 'Quà tặng trực tiếp',
+            type: 'DIRECT_PROMO',
+          });
+        if (this.state.recommendProductArray[index].promoID.voucherPromo === 1)
+          recommend.push({
+            title: 'Voucher',
+            type: 'VOUCHER_PROMO',
+          });
+        if (this.state.recommendProductArray[index].promoID.giftPromo === 1)
+          recommend.push({
+            title: 'Quà tặng kèm',
+            type: 'GIFT_PROMO',
+          });
+        var dis = this.state.recommendProductArray[index].discount;
+        if (this.state.recommendProductArray[index].discount > 0)
+          recommend.push({
+            title: `Giảm ${dis}%`,
+            type: 'DISCOUNT',
+          });
+      }
+
+      await this.setState({isLoading: false, recommendations: recommend});
     } catch {
       await this.setState({isLoading: false});
     }
@@ -87,11 +102,6 @@ export default class DetailScreen extends React.Component {
 
   componentDidMount() {
     this.getPromo();
-    console.log(this.state.recommendProductArray);
-    var productWithPromo = this.state.recommendProductArray;
-    var index = productWithPromo.findIndex(
-      ({item}) => item.id == this.state.product.id,
-    );
   }
 
   renderItem = ({item}) => (
@@ -187,22 +197,28 @@ export default class DetailScreen extends React.Component {
             <View style={styles.recommendationContainer}>
               <Text style={styles.nameStyle}>Đề xuất</Text>
               <View style={styles.imgDetailContainer}>
-                {this.state.recommendations.length === 0 ? (
-                  <Text style={styles.noRecom}>
-                    Hiện chưa có đề xuất nào cho sản phẩm.
-                  </Text>
+                {!this.state.isLoading ? (
+                  this.state.recommendations.length === 0 ? (
+                    <Text style={styles.noRecom}>
+                      Hiện chưa có đề xuất nào cho sản phẩm.
+                    </Text>
+                  ) : (
+                    <View>
+                      <FlatList
+                        showsVerticalScrollIndicator={false}
+                        data={this.state.recommendations}
+                        renderItem={this.renderRecommendation}
+                        extraData={this.state}
+                        keyExtractor={item => item.title}
+                      />
+                      <Button block style={styles.applyBtn}>
+                        <Text style={styles.recomStyle}>Áp dụng</Text>
+                      </Button>
+                    </View>
+                  )
                 ) : (
-                  <FlatList
-                    showsVerticalScrollIndicator={false}
-                    data={Recommend}
-                    renderItem={this.renderRecommendation}
-                    extraData={this.state}
-                    keyExtractor={item => item.title}
-                  />
+                  <Spinner color="blue" />
                 )}
-                <Button block style={styles.applyBtn}>
-                  <Text style={styles.recomStyle}>Áp dụng</Text>
-                </Button>
               </View>
             </View>
           </ScrollView>
@@ -214,12 +230,12 @@ export default class DetailScreen extends React.Component {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: Color.lightGray,
+    backgroundColor: 'white',
     height: SCREEN_HEIGHT - 60,
     width: '100%',
   },
   container: {
-    backgroundColor: Color.lightGray,
+    backgroundColor: 'white',
   },
   detailContainer: {
     flexDirection: 'row',

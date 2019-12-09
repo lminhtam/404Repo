@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Color from '../constants/Color';
 import {SCREEN_WIDTH} from '../shared/ultility';
-import {Button, Text} from 'native-base';
+import {Button, Text, Toast} from 'native-base';
 
 class Information extends React.Component {
   render() {
@@ -75,6 +75,20 @@ export default class MoreScreen extends React.Component {
     await this.setState({refreshing: false});
   };
 
+  logout = async () => {
+    try {
+      await AsyncStorage.removeItem('Logged');
+    } catch (exception) {
+      Toast.show({
+        text: 'Unable to log out. Try again!',
+        buttonText: 'Okay',
+        duration: 3000,
+        position: 'top',
+        type: 'danger',
+      });
+    }
+  };
+
   render() {
     return (
       <ScrollView
@@ -96,7 +110,7 @@ export default class MoreScreen extends React.Component {
             )}
             keyExtractor={item => item.name}
           />
-          <Button bordered danger style={{marginTop: 16}}>
+          <Button bordered danger style={{marginTop: 16}} onPress={() => this.logout()}>
             <Text style={styles.logoutStyle}>Đăng xuất</Text>
           </Button>
         </View>
@@ -110,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Color.lightGray,
+    backgroundColor: 'white',
   },
   nameStyle: {
     fontFamily: 'Cabin-Bold',
@@ -137,6 +151,11 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
+    elevation: 4,
+    shadowOffset: {width: 5, height: 5},
+    shadowColor: 'grey',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
   },
   logoutStyle: {
     fontFamily: 'Cabin-Regular',
