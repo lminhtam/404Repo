@@ -2,7 +2,7 @@ import * as React from 'react';
 import {View, StyleSheet, AsyncStorage} from 'react-native';
 import Color from '../constants/Color';
 import {SCREEN_WIDTH} from '../shared/ultility';
-import {Button, Text, Toast} from 'native-base';
+import {Button, Text, Toast, Thumbnail} from 'native-base';
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -46,9 +46,12 @@ export default class LoginScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button
-          style={styles.loginBtn}
-          onPress={() => this.handleLogin()}>
+        <Thumbnail
+          large
+          square
+          source={require('../shared/img/haravan-logo.png')}
+        />
+        <Button style={styles.loginBtn} onPress={() => this.handleLogin()}>
           <Text style={styles.loginStyle}>Đăng nhập</Text>
         </Button>
       </View>
@@ -66,6 +69,7 @@ const styles = StyleSheet.create({
   loginStyle: {
     fontFamily: 'Cabin-SemiBold',
     fontSize: 14,
+    color: 'white',
   },
   loginBtn: {
     margin: 32,

@@ -5,10 +5,11 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
+  AsyncStorage,
 } from 'react-native';
 import Color from '../constants/Color';
 import {SCREEN_WIDTH} from '../shared/ultility';
-import {Button, Text, Toast} from 'native-base';
+import {Button, Text} from 'native-base';
 
 class Information extends React.Component {
   render() {
@@ -78,14 +79,9 @@ export default class MoreScreen extends React.Component {
   logout = async () => {
     try {
       await AsyncStorage.removeItem('Logged');
+      this.props.navigation.navigate('Login');
     } catch (exception) {
-      Toast.show({
-        text: 'Unable to log out. Try again!',
-        buttonText: 'Okay',
-        duration: 3000,
-        position: 'top',
-        type: 'danger',
-      });
+      console.log(exception);
     }
   };
 
@@ -110,7 +106,11 @@ export default class MoreScreen extends React.Component {
             )}
             keyExtractor={item => item.name}
           />
-          <Button bordered danger style={{marginTop: 16}} onPress={() => this.logout()}>
+          <Button
+            bordered
+            danger
+            style={{marginTop: 16}}
+            onPress={() => this.logout()}>
             <Text style={styles.logoutStyle}>Đăng xuất</Text>
           </Button>
         </View>

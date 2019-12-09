@@ -1,5 +1,12 @@
 import * as React from 'react';
-import {View, StyleSheet, ScrollView, Image, FlatList} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Image,
+  FlatList,
+  Modal,
+} from 'react-native';
 import Color from '../constants/Color';
 import {
   Header,
@@ -12,11 +19,11 @@ import {
   CheckBox,
   ListItem,
   Spinner,
+  Thumbnail,
 } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import SafeAreaView from 'react-native-safe-area-view';
 import {SCREEN_HEIGHT, SCREEN_WIDTH, formatCurrency} from '../shared/ultility';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const emptyImg = [
   {
@@ -45,6 +52,10 @@ export default class DetailScreen extends React.Component {
       recommendations: [],
       isLoading: true,
       recommendProductArray: [],
+      recommendSelection: [],
+      index: -1,
+      flag: false,
+      isModalVisible: false,
     };
   }
 
@@ -65,36 +76,82 @@ export default class DetailScreen extends React.Component {
       });
       var index = this.state.recommendProductArray.findIndex(this.compareId);
       var recommend = [];
+      var recommendSelect = [];
+      var length = 0;
       if (index >= 0) {
-        if (this.state.recommendProductArray[index].promoID.birthdayPromo === 1)
+        if (
+          this.state.recommendProductArray[index].promoID.birthdayPromo === 1
+        ) {
           recommend.push({
             title: 'Quà tặng sinh nhật',
             type: 'BIRTHDAY_PROMO',
+            key: length,
           });
-        if (this.state.recommendProductArray[index].promoID.directPromo === 1)
+          recommendSelect.push({
+            status: false,
+            type: 'BIRTHDAY_PROMO',
+          });
+          length++;
+        }
+        if (this.state.recommendProductArray[index].promoID.directPromo === 1) {
           recommend.push({
             title: 'Quà tặng trực tiếp',
             type: 'DIRECT_PROMO',
+            key: length,
           });
-        if (this.state.recommendProductArray[index].promoID.voucherPromo === 1)
+          recommendSelect.push({
+            status: false,
+            type: 'DIRECT_PROMO',
+          });
+          length++;
+        }
+        if (
+          this.state.recommendProductArray[index].promoID.voucherPromo === 1
+        ) {
           recommend.push({
             title: 'Voucher',
             type: 'VOUCHER_PROMO',
+            key: length,
           });
-        if (this.state.recommendProductArray[index].promoID.giftPromo === 1)
+          recommendSelect.push({
+            status: false,
+            type: 'VOUCHER_PROMO',
+          });
+          length++;
+        }
+        if (this.state.recommendProductArray[index].promoID.giftPromo === 1) {
           recommend.push({
             title: 'Quà tặng kèm',
             type: 'GIFT_PROMO',
+            key: length,
           });
+          recommendSelect.push({
+            status: false,
+            type: 'GIFT_PROMO',
+          });
+          length++;
+        }
         var dis = this.state.recommendProductArray[index].discount;
-        if (this.state.recommendProductArray[index].discount > 0)
+        if (dis > 0) {
           recommend.push({
             title: `Giảm ${dis}%`,
             type: 'DISCOUNT',
+            key: length,
           });
+          recommendSelect.push({
+            status: false,
+            type: 'DISCOUNT',
+          });
+          length++;
+        }
       }
 
-      await this.setState({isLoading: false, recommendations: recommend});
+      await this.setState({
+        isLoading: false,
+        recommendations: recommend,
+        recommendSelection: recommendSelect,
+        index: index,
+      });
     } catch {
       await this.setState({isLoading: false});
     }
@@ -120,15 +177,54 @@ export default class DetailScreen extends React.Component {
     </View>
   );
 
+  handleApplyBtn = async () => {
+    var select = this.state.recommendSelection;
+    var recom = this.state.recommendations;
+    var flag = false;
+    for (let i = 0; i < select.length; i++) {
+      if (select[i].status === true) {
+        if (select[i].type === 'DISCOUNT') {
+          var p = this.state.product;
+          p.variants[0].price = this.state.recommendProductArray[
+            this.state.index
+          ].newPrice;
+        }
+        select.splice(i, 1);
+        recom.splice(i, 1);
+        i--;
+        flag = true;
+      } else {
+        select[i].key = i;
+        recom[i].key = i;
+      }
+    }
+    await this.setState({
+      recommendSelection: select,
+      recommendations: recom,
+      flag: flag,
+      isModalVisible: true,
+    });
+  };
+
+  handlePressCheckBox = async item => {
+    var select = this.state.recommendSelection;
+    select[item.key].status = !select[item.key].status;
+    await this.setState({recommendSelection: select});
+  };
+
   renderRecommendation = ({item}) => (
-    <TouchableOpacity>
-      <ListItem style={{width: SCREEN_WIDTH - 32}}>
-        <CheckBox checked={false} color={Color.tintColor} />
-        <Body>
-          <Text style={styles.recomStyle}>{item.title}</Text>
-        </Body>
-      </ListItem>
-    </TouchableOpacity>
+    <ListItem
+      onPress={() => this.handlePressCheckBox(item)}
+      style={{width: SCREEN_WIDTH - 32}}>
+      <CheckBox
+        checked={this.state.recommendSelection[item.key].status}
+        color={Color.tintColor}
+        onPress={() => this.handlePressCheckBox(item)}
+      />
+      <Body>
+        <Text style={styles.recomStyle}>{item.title}</Text>
+      </Body>
+    </ListItem>
   );
 
   render() {
@@ -157,6 +253,39 @@ export default class DetailScreen extends React.Component {
           </LinearGradient>
           <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.imgDetailContainer}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.isModalVisible}
+                onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
+                }}>
+                <View style={styles.modalContainer}>
+                  <Thumbnail
+                    large
+                    source={
+                      this.state.flag
+                        ? require('../shared/img/success.png')
+                        : require('../shared/img/error.png')
+                    }
+                    style={{alignSelf: 'center', marginTop: 16}}
+                  />
+                  <Text style={{...styles.noRecom, alignSelf: 'center'}}>
+                    {this.state.flag
+                      ? 'Đã áp dụng thành công!'
+                      : 'Vui lòng chọn đề xuất cần áp dụng'}
+                  </Text>
+                  <Button
+                    style={styles.applyBtn}
+                    onPress={() => {
+                      this.setState({
+                        isModalVisible: !this.state.isModalVisible,
+                      });
+                    }}>
+                    <Text style={styles.recomStyle}>Quay lại</Text>
+                  </Button>
+                </View>
+              </Modal>
               {this.state.product.images.length === 0 ? (
                 <FlatList
                   horizontal={true}
@@ -173,7 +302,7 @@ export default class DetailScreen extends React.Component {
                   data={this.state.product.images}
                   renderItem={this.renderItem}
                   extraData={this.state}
-                  keyExtractor={item => item.title}
+                  keyExtractor={item => item.images}
                 />
               )}
               <Text style={styles.nameStyle}>{this.state.product.title}</Text>
@@ -209,9 +338,12 @@ export default class DetailScreen extends React.Component {
                         data={this.state.recommendations}
                         renderItem={this.renderRecommendation}
                         extraData={this.state}
-                        keyExtractor={item => item.title}
+                        keyExtractor={item => item.key}
                       />
-                      <Button block style={styles.applyBtn}>
+                      <Button
+                        block
+                        style={styles.applyBtn}
+                        onPress={() => this.handleApplyBtn()}>
                         <Text style={styles.recomStyle}>Áp dụng</Text>
                       </Button>
                     </View>
@@ -307,5 +439,19 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 10,
     backgroundColor: Color.tintColor,
+    justifyContent: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    width: SCREEN_WIDTH - 64,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 5,
+    elevation: 4,
+    shadowOffset: {width: 5, height: 5},
+    shadowColor: 'grey',
+    shadowOpacity: 0.7,
+    shadowRadius: 20,
+    marginTop: 150,
   },
 });

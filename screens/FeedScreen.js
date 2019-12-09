@@ -10,25 +10,6 @@ import {
 import {STATUSBAR_HEIGHT, SCREEN_WIDTH} from '../shared/ultility';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const noti = [
-  {
-    title: 'Bạn vừa thay đổi giá của 3 spBạn vừa thay đổi giá của 3 spBạn vừa thay đổi giá của 3 sp',
-    key: '1',
-  },
-  {
-    title: 'Bạn vừa thay đổi giá của 3 sp',
-    key: '2',
-  },
-  {
-    title: 'Bạn vừa thay đổi giá của 3 sp',
-    key: '3',
-  },
-  {
-    title: 'Bạn vừa thay đổi giá của 3 sp',
-    key: '4',
-  },
-];
-
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
     title: 'Feed',

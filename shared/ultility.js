@@ -13,7 +13,12 @@ export function formatCurrency(n, separate = '.') {
   return ret;
 }
 export const isLoggedIn = async () => {
+  console.log(AsyncStorage.getAllKeys());
   const value = await AsyncStorage.getItem('Logged');
-  if (value === 'Logon') return true;
-  else return false;
+  if (value === 'Logon') {
+    console.log('da dang nhap');
+    return 'Main';
+  } else {
+    return 'Login';
+  }
 };
