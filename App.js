@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import {Platform} from 'react-native';
-import {createAppContainer} from 'react-navigation';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import FeedScreen from './screens/FeedScreen';
@@ -18,6 +18,7 @@ import DetailScreen from './screens/DetailScreen';
 import LoginScreen from './screens/LoginScreen';
 import TabBarIcon from './components/TabBarIcon';
 import Color from './constants/Color';
+import {isLoggedIn} from './shared/ultility';
 
 const ListStack = createStackNavigator(
   {
@@ -73,13 +74,13 @@ const TabNavigator = createBottomTabNavigator(
   },
 );
 
-const AppStack = createStackNavigator(
+const AppStack = createSwitchNavigator(
   {
     Login: LoginScreen,
     Main: TabNavigator,
   },
   {
-    initialRouteName: 'Login',
+    initialRouteName: isLoggedIn() ? 'Main' : 'Login',
     headerMode: 'none',
   },
 );
