@@ -16,13 +16,9 @@ import ListScreen from './screens/ListScreen';
 import MoreScreen from './screens/MoreScreen';
 import DetailScreen from './screens/DetailScreen';
 import LoginScreen from './screens/LoginScreen';
+import LoadingScreen from './screens/LoadingScreen';
 import TabBarIcon from './components/TabBarIcon';
 import Color from './constants/Color';
-import {isLoggedIn} from './shared/ultility';
-
-var loggedIn = 'Login';
-// loggedIn = isLoggedIn();
-console.log(loggedIn);
 
 const ListStack = createStackNavigator(
   {
@@ -80,11 +76,12 @@ const TabNavigator = createBottomTabNavigator(
 
 const AppStack = createSwitchNavigator(
   {
+    Loading: LoadingScreen,
     Login: LoginScreen,
     Main: TabNavigator,
   },
   {
-    initialRouteName: loggedIn,
+    initialRouteName: 'Loading',
     headerMode: 'none',
   },
 );
