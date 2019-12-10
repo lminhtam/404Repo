@@ -282,7 +282,7 @@ export default class DetailScreen extends React.Component {
                         isModalVisible: !this.state.isModalVisible,
                       });
                     }}>
-                    <Text style={styles.recomStyle}>Quay lại</Text>
+                    <Text style={styles.btnTextStyle}>Quay lại</Text>
                   </Button>
                 </View>
               </Modal>
@@ -344,7 +344,7 @@ export default class DetailScreen extends React.Component {
                         block
                         style={styles.applyBtn}
                         onPress={() => this.handleApplyBtn()}>
-                        <Text style={styles.recomStyle}>Áp dụng</Text>
+                        <Text style={styles.btnTextStyle}>Áp dụng</Text>
                       </Button>
                     </View>
                   )
@@ -432,6 +432,12 @@ const styles = StyleSheet.create({
     margin: 16,
   },
   recomStyle: {
+    color: 'black',
+    fontFamily: 'Cabin-Regular',
+    fontSize: 14,
+  },
+  btnTextStyle: {
+    color: 'white',
     fontFamily: 'Cabin-Regular',
     fontSize: 14,
   },
